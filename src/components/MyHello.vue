@@ -1,19 +1,20 @@
 <script setup>
+import { ref } from 'vue';
+// import see from "../utils/myJsUtils"; 
+
+// COMPOSITION API: 
+let count = ref(0);
+
+function increment() {
+    count.value++;
+}
+
 
 </script>
 
 <template>
-  <!--  HERE IS THE LAYOUT ITSELF -->
+    <!--  HERE IS THE LAYOUT ITSELF -->
 
-  <p class="text">HERE IS AN IMPORTED COMPONENT</p>
-  <button>Click Me Bitch!</button>
-
-
+    <h1>{{ count }}</h1>
+    <button @click="increment"> + </button>
 </template>
-
-
-<style scoped>
-  body { background-color: red; }
-  .text { background-color: aquamarine}
-
-</style>

@@ -3,8 +3,7 @@
 </script>
 
 <template>
-  <h1>Viorel Harabaru</h1>
-  <MyHello/>
+  <MyHello />
 </template>
 
 
