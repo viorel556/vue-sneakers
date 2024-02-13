@@ -1,21 +1,16 @@
 <script setup>
-  import MyHello from '@/components/MyHello.vue';
+  import HeaderContainer from './components/Header.vue'
+
 </script>
 
 <template>
-  <!-- SENDING PROPS HERE: -->
-  <!-- ":" - indicates to Vue that this is a property of dinamically interepreted type -->
-  <MyHello title="Sneakers Puma" :price="1200" is-added/>
-  <MyHello title="Sneakers Nike" :price="1500"/>
-
-  <MyHello title="Sneakers Nike" :price="1500">
+  <div class="bg-white w-4/5 m-auto h-4/5 h-screen rounded-xl shadow-xl mt-14">
     
-    <!-- BELLOW IS A SLOT CONTENT:  -->
-    <button> Additional Button </button>
-  </MyHello> 
+    <HeaderContainer />
 
+  </div>
 </template>
 
+<style scoped>
 
-
-<style> </style>
+</style>
