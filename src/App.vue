@@ -1,7 +1,85 @@
 <script setup>
 import CardList from './components/CardList.vue';
 import Header from './components/Header.vue';
+import SearchBar from './SearchBar.vue'
+import DropdownMenu from './DropdownMenu.vue'
 // import Drawer from './components/Drawer.vue';
+
+const items = [
+  {
+    "id": 1,
+    "title": "Мужские Кроссовки Nike Blazer Mid Suede",
+    "price": 12999,
+    "imageUrl": "/sneakers/sneakers-1.jpg"
+  },
+  {
+    "id": 2,
+    "title": "Мужские Кроссовки Nike Air Max 270",
+    "price": 15600,
+    "imageUrl": "/sneakers/sneakers-2.jpg"
+  },
+  {
+    "id": 3,
+    "title": "Мужские Кроссовки Nike Blazer Mid Suede",
+    "price": 8499,
+    "imageUrl": "/sneakers/sneakers-3.jpg"
+  },
+  {
+    "id": 4,
+    "title": "Кроссовки Puma X Aka Boku Future Rider",
+    "price": 7800,
+    "imageUrl": "/sneakers/sneakers-4.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Кроссовки Future Rider",
+    "price": 9550,
+    "imageUrl": "/sneakers/sneakers-5.jpg"
+  },
+  {
+    "id": 6,
+    "title": "Кроссовки Black Edition",
+    "price": 16999,
+    "imageUrl": "/sneakers/sneakers-6.jpg"
+  },
+  {
+    "id": 7,
+    "title": "Кроссовки Orange Boomb Edition",
+    "price": 7499,
+    "imageUrl": "/sneakers/sneakers-7.jpg"
+  },
+  {
+    "id": 8,
+    "title": "Кроссовки Nike Air Max 270",
+    "price": 15600,
+    "imageUrl": "/sneakers/sneakers-8.jpg"
+  },
+  {
+    "id": 9,
+    "title": "Кроссовки Nike Air Force 1",
+    "price": 5900,
+    "imageUrl": "/sneakers/sneakers-9.jpg"
+  },
+  {
+    "id": 10,
+    "title": "Кроссовки Adidas Ultraboost",
+    "price": 11500,
+    "imageUrl": "/sneakers/sneakers-10.jpg"
+  },
+  {
+    "id": 11,
+    "title": "Кроссовки Puma Clyde All-Pro",
+    "price": 7600,
+    "imageUrl": "/sneakers/sneakers-11.jpg"
+  },
+  {
+    "id": 12,
+    "title": "Кроссовки Converse Chuck Taylor All-Star",
+    "price": 13000,
+    "imageUrl": "/sneakers/sneakers-12.jpg"
+  }
+]
+
 
 </script>
 
@@ -17,33 +95,18 @@ import Header from './components/Header.vue';
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold"> All Sneakers </h2>
 
-
-
         <div class="flex gap-4">
-          <!-- THE DROPDOWN -->
-          <select class="py-2 px-4 border rounded-md outline-none" name="" id="">
-            <option value=""> By Name </option>
-            <option value=""> By Price (cheap)</option>
-            <option value=""> By Price (expensive)</option>
-          </select>
+          
+          <DropdownMenu />
 
-          <div class="relative">
-            <!-- THE SEARCH BAR -->
-            <img class="absolute left-3 top-3" src="/search.svg" alt="search">
-            <input class="border border-gray-200 py-2 px-10 rounded-xl outline-none focus:border-gray-400"
-              placeholder="Search..." type="text">
-          </div>
+          <SearchBar />
 
         </div>
 
       </div>
 
-      <CardList />
+      <CardList :items="items"/>
     </div>
-
-
-
-
 
   </div>
 </template>
