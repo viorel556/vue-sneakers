@@ -15,10 +15,9 @@ function onClickAddToFavorites() {
 </script>
 
 <template>
-  <div class="p-10">
-    <h2 class="text-3xl font-bold px-10"> All Sneakers </h2>
+  <div class="p-5">
 
-    <div class="grid grid-cols-4 gap-5 m-10">
+    <div class="grid grid-cols-4 gap-5 m-5">
       <Card 
       image-url="/sneakers/sneakers-1.jpg" 
       title="Male sneakers Puma Huiuma" 
