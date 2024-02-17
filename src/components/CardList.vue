@@ -6,8 +6,6 @@ defineProps({
     items: Array
 }); 
 
-
-
 function onClickAddToCart () { 
   // ADDS AN ELEMENT TO THE CART; 
   alert("ELEMENT ADDED TO CART");

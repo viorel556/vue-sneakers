@@ -1,8 +1,18 @@
+<script setup>
+  import { defineProps } from 'vue'
+
+  defineProps({
+    sortBy: String,
+    onChangeSelect: Function
+  }); 
+
+</script>
+
 <template>
-	<select class="py-2 px-4 border rounded-md outline-none" name="" id="">
-	            <!-- THE DROPDOWN -->
-	            <option value=""> By Name </option>
-	            <option value=""> By Price (cheap)</option>
-	            <option value=""> By Price (expensive)</option>
-	          </select>
+  <select @change="onChangeSelect" class="py-2 px-4 border rounded-md outline-none" name="" id="">
+    <!-- THE DROPDOWN MENU -->
+    <option value="name"> By Name </option>
+    <option value="price"> By Price (cheap)</option>
+    <option value="-price"> By Price (expensive)</option> 
+  </select>
 </template>
