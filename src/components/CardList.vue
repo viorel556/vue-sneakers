@@ -1,36 +1,29 @@
-
 <script setup>
-import Card from './Card.vue' 
+import Card from './Card.vue'
+import { inject } from 'vue'
 
-defineProps({
-    items: Array
-}); 
+const props = defineProps({
+  items: Array
+})
 
-function onClickAddToCart () { 
-  // ADDS AN ELEMENT TO THE CART; 
-  alert("ELEMENT ADDED TO CART");
-}
-function onClickAddToFavorites() { 
-  // ADDS AN ELEMENT TO THE FAVORITES; 
-  alert("ELEMENT ADDED TO FAVORITES");
-}
+const addToFavorites = inject('addToFavorites');
+
 
 </script>
 
 <template>
   <div class="p-5">
-
     <div class="grid grid-cols-4 gap-5 m-5">
-      <Card 
-      v-for="item in items"
-      :key="item.id"
-      :title="item.title" 
-      :image-url="item.imageUrl" 
-      :price="item.price" 
-      :is-added="item.isAdded"
-      :is-favorite="item.isFavorite"
-      :onClickAddToCart="onClickAddToCart"
-      :onClickAddToFavorites="onClickAddToFavorites"
+      <Card
+        v-for="item in items"
+        :key="item.id"
+        :id="item.id"
+        :title="item.title"
+        :image-url="item.imageUrl"
+        :price="item.price"
+        :is-added="item.isAdded"
+        :is-favorite="item.isFavorite"
+        :onCLickAddToFavorites="() => addToFavorites(item)"
       />
     </div>
   </div>
