@@ -1,13 +1,12 @@
 <script setup>
 import Card from './Card.vue'
-import { inject } from 'vue'
 
-const props = defineProps({
+defineProps({
   items: Array
 })
 
-const addToFavorites = inject('addToFavorites');
-
+// Callbacks are received via emit;
+const emit = defineEmits(['addToFavorites'])
 
 </script>
 
@@ -23,7 +22,7 @@ const addToFavorites = inject('addToFavorites');
         :price="item.price"
         :is-added="item.isAdded"
         :is-favorite="item.isFavorite"
-        :onCLickAddToFavorites="() => addToFavorites(item)"
+        :toggleFavorite="() => emit('toggleFavorite', item)"
       />
     </div>
   </div>

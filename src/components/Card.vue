@@ -1,6 +1,6 @@
 <script setup>
 
-const props = defineProps({
+defineProps({
   // DATA FROM SERVER:
   id: Number,
   imageUrl: String,
@@ -10,7 +10,7 @@ const props = defineProps({
   isFavorite: Boolean, // [!] ILLEGAL MOVE; As per copilot we cannot keep local state within define props
   isAdded: Boolean,
   // CALLBACKS:
-  onCLickAddToFavorites: Function 
+  toggleFavorite: Function
 })
 
 </script>
@@ -21,10 +21,10 @@ const props = defineProps({
     transition-all hover:translate-y-2 hover:shadow-xl">
     <div class="">
       <img
-        class="absolute top-8 left-8"
+        class="absolute top-8 left-8 transition-all hover:scale-125"
         :src="isFavorite ? '/like-1.svg' : '/like-2.svg'"
         alt="Like"
-        @click="onCLickAddToFavorites"
+        @click="toggleFavorite"
       />
 
       <img :src="imageUrl" alt="Sneaker" />
@@ -39,6 +39,7 @@ const props = defineProps({
         </div>
 
         <img
+          class="hover:scale-125 transition-all"
           :src="isAdded ? '/checked.svg' : '/plus.svg'"
           alt="Plus"
         />

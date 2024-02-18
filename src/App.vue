@@ -3,7 +3,7 @@ import CardList from './components/CardList.vue';
 import Header from './components/Header.vue';
 import SearchBar from './SearchBar.vue';
 import DropdownMenu from './DropdownMenu.vue';
-import { onMounted, ref, watch, reactive, provide } from 'vue';
+import { onMounted, ref, watch, reactive } from 'vue';
 import axios from 'axios';
 import see from './utils/myJsUtils';
 // import Drawer from './components/Drawer.vue';
@@ -26,6 +26,8 @@ const fetchItems = async () => {
       params.title = `*${filters.searchQuery}*`
     }
 
+     // FIXME[EASY](*): create an axios instance to shorten the code (check other projects for reference);
+    // it is preferable to encapsulate that instance;
     const { data } = await axios.get(`https://df4b4c57be9170d6.mokky.dev/items`, { params })
 
     items.value = data.map((obj) => {
@@ -33,6 +35,7 @@ const fetchItems = async () => {
       return {
         ...obj,
         isFavorite: false,
+        favoriteId: null,
         isAdded: false
       }
     })
@@ -42,7 +45,7 @@ const fetchItems = async () => {
 
 const fetchFavoritesAndUpdateItems = async () => {
   // this function cross-checks the favorite items with the items from the server and CHANGES the items[]
-  // FIXME[EASY](*) Ideally there should be 2 functions; one to fetch favorites and one to update items;
+  // FIXME[MEDIUM](*) Ideally there should be 2 functions; one to fetch favorites and one to update items;
   try {
     const { data: favorites } = await axios.get(`https://df4b4c57be9170d6.mokky.dev/favorites`);
 
@@ -62,17 +65,18 @@ const fetchFavoritesAndUpdateItems = async () => {
       }
 
     })
-    see(items.value)
   }
   catch (err) { see(err) }
 }
 
-
-// HOOKS:
-onMounted(async () => {
-
+const fetchItemsAndUpdateFavorites = async () => {
   await fetchItems();
   await fetchFavoritesAndUpdateItems();
+}
+
+// HOOKS:
+onMounted( () => {
+  fetchItemsAndUpdateFavorites();
 })
 
 // EVENT HANDLERS:
@@ -86,17 +90,30 @@ const onChangeSearch = async (event) => {
 }
 
 // WATCHERS:
-watch(filters, fetchItems)
+watch(filters, fetchItemsAndUpdateFavorites)
 
-const addToFavorites = async (item) => {
-  // item == obj (form another func that calls this one)
-  item.isFavorite = Boolean(!item.isFavorite)
-  // returns { isFavorite: true, favoriteId: # }
-  see(item)
+const toggleFavorite = async (item) => {
+    // NB: in my implementation FLUX
+   // icon gets UPDATED only when we know FOR SURE that the item was added/removed from Back End Favorites
+  // only after the request itself (POST/DELETE) WAS COMPLETED the UI gets updated accordingly;
+
+  if (!item.isFavorite) { // if item is not favorite do:
+    try {
+      const payload = { parentId: item.id } // Creates a favorite item on the server;
+      const { data } = await axios.post(`https://df4b4c57be9170d6.mokky.dev/favorites`, payload)
+      item.isFavorite = true; // Changing the FRONT-END to reflect that the item was added to favorites;
+      item.favoriteId = data.id // saving the favorite id on Front-end; so we can delete it later
+    }
+    catch (err) { see(err) }
+  }
+  else {
+    try {
+      await axios.delete(`https://df4b4c57be9170d6.mokky.dev/favorites/${item.favoriteId}`)
+      item.isFavorite = false; // Changing the FRONT-END to reflect that the item was removed from favorites
+    }
+    catch (err) { see(err) }
+  }
 }
-
-// GLOBALS:
-provide('addToFavorites', addToFavorites);
 
 </script>
 
@@ -127,6 +144,7 @@ provide('addToFavorites', addToFavorites);
 
       <CardList
         :items="items"
+        @toggleFavorite="toggleFavorite"
       />
     </div>
   </div>
