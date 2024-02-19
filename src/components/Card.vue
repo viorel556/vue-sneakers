@@ -10,7 +10,8 @@ defineProps({
   isFavorite: Boolean, // [!] ILLEGAL MOVE; As per copilot we cannot keep local state within define props
   isAdded: Boolean,
   // CALLBACKS:
-  toggleFavorite: Function
+  toggleFavorite: Function,
+  addToCart: Function
 })
 
 </script>
@@ -35,10 +36,11 @@ defineProps({
 
         <div class="flex flex-col">
           <span class="text-gray-400">Price</span>
-          <b> {{ price }}</b>
+          <b> {{ price }} €</b>
         </div>
 
         <img
+          @click="addToCart"
           class="hover:scale-125 transition-all"
           :src="isAdded ? '/checked.svg' : '/plus.svg'"
           alt="Plus"

@@ -1,5 +1,15 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
+import { inject } from 'vue'
+
+// Injecting a global func:
+const toggleDrawer = inject('toggleDrawer');
+
+defineProps({
+  drawerOpen: Boolean,
+  total: Number
+})
+
 </script>
 
 <template>
@@ -16,9 +26,9 @@
 
     <ul class="flex items-center gap-10">
       <!-- RIGHT SECTION HEADER -->
-      <li class="nav_item">
+      <li class="nav_item" @click="toggleDrawer">
         <img src="/cart.svg" alt="Cart">
-        <b> 1200 EUR </b>
+        <b> {{total}} EUR </b>
       </li>
 
       <li class="nav_item">

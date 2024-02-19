@@ -3,18 +3,20 @@ import CardList from './components/CardList.vue';
 import Header from './components/Header.vue';
 import SearchBar from './SearchBar.vue';
 import DropdownMenu from './DropdownMenu.vue';
-import { onMounted, ref, watch, reactive } from 'vue';
+import { onMounted, ref, watch, reactive, provide } from 'vue'
 import axios from 'axios';
-import see from './utils/myJsUtils';
-// import Drawer from './components/Drawer.vue';
+import see  from './utils/utils.js'
+import Drawer from './components/Drawer.vue';
 
 // A BUNCH OF LOCAL STATES:
-const items = ref([])
-
+const items = ref([]);
+const drawerOpen = ref(false);
+const cart = ref([]);
 const filters = reactive({
   sortBy: 'title', // now all these properties are reactive;
   searchQuery: ''
-})
+});
+const total = ref(0.00);
 
 const fetchItems = async () => {
   // Func gets items from server and assigns them to items (local state)
@@ -39,7 +41,6 @@ const fetchItems = async () => {
         isAdded: false
       }
     })
-
   } catch (err) { see(err) }
 }
 
@@ -63,7 +64,6 @@ const fetchFavoritesAndUpdateItems = async () => {
         isFavorite: true,
         favoriteId: favorite.id
       }
-
     })
   }
   catch (err) { see(err) }
@@ -96,7 +96,6 @@ const toggleFavorite = async (item) => {
     // NB: in my implementation FLUX
    // icon gets UPDATED only when we know FOR SURE that the item was added/removed from Back End Favorites
   // only after the request itself (POST/DELETE) WAS COMPLETED the UI gets updated accordingly;
-
   if (!item.isFavorite) { // if item is not favorite do:
     try {
       const payload = { parentId: item.id } // Creates a favorite item on the server;
@@ -115,39 +114,69 @@ const toggleFavorite = async (item) => {
   }
 }
 
+const toggleDrawer = () => {
+  drawerOpen.value = !drawerOpen.value
+}
+
+const addToCart = (item) => {
+  // FIXME[EASY](*): Name this toggleCartItem, if suitable; It still toggles an item;
+  if (item.isAdded === false) {
+    item.isAdded = true;
+    cart.value.push(item);
+    total.value += item.price;
+  }
+  else if (item.isAdded === true) {
+    item.isAdded = false;
+    cart.value = cart.value.filter( (cartItem) => cartItem.id !== item.id);
+    total.value -= item.price;
+     // another approach (just in case first one bugs out);
+    // cart.value.splice(cart.value.indexOf(item), 1);
+  }
+  see(cart);
+}
+
+// GLOBALS:
+provide('toggleDrawer', toggleDrawer); // 2 usages: Header.vue & DrawerHead.vue
+provide('addToCart', addToCart);
+
 </script>
 
 <template>
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
+     <Drawer
+       v-if="drawerOpen"
+       :cart="cart"
+       :total="total"
+     />
 
-    <!-- <Drawer />  -->
-
-    <Header />
+    <Header
+      :total="total"
+    />
 
     <div class="m-10">
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold"> All Sneakers </h2>
 
         <div class="flex gap-4">
-
           <DropdownMenu
-            :sortBy="filters.sortBy"
-            :onChangeSelect="onChangeSelect"
+            :sort-by="filters.sortBy"
+            :on-change-select="onChangeSelect"
           />
-
           <SearchBar
-            :searchQuery="filters.searchQuery"
-            :onChangeSearch="onChangeSearch"
+            :search-query="filters.searchQuery"
+            :on-change-search="onChangeSearch"
           />
         </div>
       </div>
 
       <CardList
         :items="items"
-        @toggleFavorite="toggleFavorite"
+        @toggle-favorite="toggleFavorite"
+        @add-to-cart="addToCart"
       />
     </div>
   </div>
+
 </template>
 
 <style scoped></style>

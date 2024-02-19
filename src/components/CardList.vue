@@ -6,7 +6,7 @@ defineProps({
 })
 
 // Callbacks are received via emit;
-const emit = defineEmits(['addToFavorites'])
+const emit = defineEmits(['toggleFavorite', 'addToCart']);
 
 </script>
 
@@ -22,7 +22,8 @@ const emit = defineEmits(['addToFavorites'])
         :price="item.price"
         :is-added="item.isAdded"
         :is-favorite="item.isFavorite"
-        :toggleFavorite="() => emit('toggleFavorite', item)"
+        :toggle-favorite="() => emit('toggleFavorite', item)"
+        :add-to-cart="() => emit('addToCart', item)"
       />
     </div>
   </div>
