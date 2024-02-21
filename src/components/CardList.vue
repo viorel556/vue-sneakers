@@ -6,13 +6,13 @@ defineProps({
 })
 
 // Callbacks are received via emit;
-const emit = defineEmits(['toggleFavorite', 'addToCart']);
+const emit = defineEmits(['toggleFavorite', 'toggleCartItem']);
 
 </script>
 
 <template>
   <div class="p-5">
-    <div class="grid grid-cols-4 gap-5 m-5">
+    <div class="grid grid-cols-4 gap-5 m-5" v-auto-animate>
       <Card
         v-for="item in items"
         :key="item.id"
@@ -23,7 +23,7 @@ const emit = defineEmits(['toggleFavorite', 'addToCart']);
         :is-added="item.isAdded"
         :is-favorite="item.isFavorite"
         :toggle-favorite="() => emit('toggleFavorite', item)"
-        :add-to-cart="() => emit('addToCart', item)"
+        :toggle-cart-item="() => emit('toggleCartItem', item)"
       />
     </div>
   </div>

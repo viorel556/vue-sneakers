@@ -3,10 +3,11 @@ import CardList from './components/CardList.vue';
 import Header from './components/Header.vue';
 import SearchBar from './SearchBar.vue';
 import DropdownMenu from './DropdownMenu.vue';
-import { onMounted, ref, watch, reactive, provide } from 'vue'
+import { onMounted, ref, watch, reactive, provide, computed } from 'vue'
 import axios from 'axios';
 import see  from './utils/utils.js'
 import Drawer from './components/Drawer.vue';
+
 
 // A BUNCH OF LOCAL STATES:
 const items = ref([]);
@@ -16,7 +17,10 @@ const filters = reactive({
   sortBy: 'title', // now all these properties are reactive;
   searchQuery: ''
 });
-const total = ref(0.00);
+const total = computed(() => {
+  let totalPrice = cart.value.reduce( (acc, item) => acc + item.price, 0)
+  return totalPrice.toFixed(2) // returns a total with just 2 digits after the comma;
+});
 
 const fetchItems = async () => {
   // Func gets items from server and assigns them to items (local state)
@@ -43,7 +47,6 @@ const fetchItems = async () => {
     })
   } catch (err) { see(err) }
 }
-
 const fetchFavoritesAndUpdateItems = async () => {
   // this function cross-checks the favorite items with the items from the server and CHANGES the items[]
   // FIXME[MEDIUM](*) Ideally there should be 2 functions; one to fetch favorites and one to update items;
@@ -68,29 +71,57 @@ const fetchFavoritesAndUpdateItems = async () => {
   }
   catch (err) { see(err) }
 }
-
 const fetchItemsAndUpdateFavorites = async () => {
   await fetchItems();
   await fetchFavoritesAndUpdateItems();
 }
+const resetAddedItems = () => {
+  // In our implementation watch is CALLED ONLY when an order is sent to the server;
+  items.value = items.value.map( (item) => {
+    return {
+      ...item,
+      isAdded: false // nullifying isAdded property for all items immediately after an order is made;
+    }
+  })
+}
+const checkAndUpdateAddedItems = () => {
+  // this function checks if an item is in the cart and updates its isAdded state;
+  items.value = items.value.map((item) => ({
+    ...item,
+    isAdded: cart.value.some( (cartItem) => cartItem.id === item.id )
+  }))
+}
 
 // HOOKS:
-onMounted( () => {
-  fetchItemsAndUpdateFavorites();
+onMounted(async () => {
+  const localCart = localStorage.getItem('cart');
+  cart.value = localCart ? JSON.parse(localCart) : [];
+
+  await fetchItemsAndUpdateFavorites();
+
+  checkAndUpdateAddedItems();
+
 })
 
 // EVENT HANDLERS:
 const onChangeSelect = async (event) => {
   // Func passes the event to the sortBy local state var;
-  filters.sortBy = event.target.value
+  filters.sortBy = event.target.value;
 }
 const onChangeSearch = async (event) => {
   // Func passes the event to the searchQuery local state var;
-  filters.searchQuery = event.target.value
+  filters.searchQuery = event.target.value;
 }
 
 // WATCHERS:
-watch(filters, fetchItemsAndUpdateFavorites)
+watch(filters, async () => {
+  await fetchItemsAndUpdateFavorites();
+  checkAndUpdateAddedItems();
+})
+
+watch(cart, () => {
+  localStorage.setItem('cart', JSON.stringify(cart.value))
+}, { deep: true })
 
 const toggleFavorite = async (item) => {
     // NB: in my implementation FLUX
@@ -113,31 +144,51 @@ const toggleFavorite = async (item) => {
     catch (err) { see(err) }
   }
 }
-
 const toggleDrawer = () => {
   drawerOpen.value = !drawerOpen.value
 }
-
 const addToCart = (item) => {
-  // FIXME[EASY](*): Name this toggleCartItem, if suitable; It still toggles an item;
-  if (item.isAdded === false) {
-    item.isAdded = true;
-    cart.value.push(item);
-    total.value += item.price;
-  }
-  else if (item.isAdded === true) {
-    item.isAdded = false;
-    cart.value = cart.value.filter( (cartItem) => cartItem.id !== item.id);
-    total.value -= item.price;
-     // another approach (just in case first one bugs out);
-    // cart.value.splice(cart.value.indexOf(item), 1);
-  }
-  see(cart);
+  item.isAdded = true;
+  cart.value.push(item);
+  // total.value += item.price;
 }
+const removeFromCart = (item) => {
+  // FIXME[EASY](*) remove this to removeCartItem (for consistency with the second func bellow)
+  item.isAdded = false;
+  cart.value = cart.value.filter( (cartItem) => cartItem.id !== item.id);
+  checkAndUpdateAddedItems();
+  // total.value -= item.price;
+  // another approach (just in case first one bugs out);
+  // cart.value.splice(cart.value.indexOf(item), 1);
+}
+const toggleCartItem = (item) => {
+  if (!item.isAdded) { addToCart(item) }
+  else { removeFromCart(item) }
+}
+const createOrder = async () => {
+  try {
+    const { data } = await axios.post(`https://df4b4c57be9170d6.mokky.dev/orders`,
+      {
+        items: cart.value,
+        total: total.value
+      }
+    )
+    cart.value = []; // nullifying cart value that will automatically nullify the total as well;
+
+    return data;
+  }
+  catch (err) { see(err) }
+
+  finally {
+    resetAddedItems() // resetting the isAdded property of menu items;
+  }
+}
+
+
 
 // GLOBALS:
 provide('toggleDrawer', toggleDrawer); // 2 usages: Header.vue & DrawerHead.vue
-provide('addToCart', addToCart);
+provide('removeFromCart', removeFromCart); // 1 usage: CardItemList.vue
 
 </script>
 
@@ -147,6 +198,7 @@ provide('addToCart', addToCart);
        v-if="drawerOpen"
        :cart="cart"
        :total="total"
+       @create-order="createOrder"
      />
 
     <Header
@@ -172,7 +224,7 @@ provide('addToCart', addToCart);
       <CardList
         :items="items"
         @toggle-favorite="toggleFavorite"
-        @add-to-cart="addToCart"
+        @toggle-cart-item="toggleCartItem"
       />
     </div>
   </div>

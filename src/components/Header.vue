@@ -10,6 +10,7 @@ defineProps({
   total: Number
 })
 
+// FIXME[EASY](***): Make the full logo pressable and to take ya to Home;
 </script>
 
 <template>

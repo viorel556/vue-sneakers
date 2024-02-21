@@ -4,19 +4,16 @@ import { inject } from 'vue'
 
 defineProps({
   cart: Array
-})
+});
 
-const addToCart = inject('addToCart');
 
-const onClickRemove = (item) => {
-  addToCart(item);
-}
+const removeFromCart = inject('removeFromCart')
 
 </script>
 
 
 <template>
-  <div class="flex flex-1 flex-col">
+  <div class="flex flex-1 flex-col" v-auto-animate>
     <CartItem
       v-for="item in cart"
       :key="item.id"
@@ -24,7 +21,7 @@ const onClickRemove = (item) => {
       :title="item.title"
       :image-url="item.imageUrl"
       :price="item.price"
-      @onClickRemove="onClickRemove(item)"
+      @remove-from-cart="removeFromCart(item)"
     />
   </div>
 </template>

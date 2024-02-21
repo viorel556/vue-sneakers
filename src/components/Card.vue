@@ -11,7 +11,7 @@ defineProps({
   isAdded: Boolean,
   // CALLBACKS:
   toggleFavorite: Function,
-  addToCart: Function
+  toggleCartItem: Function
 })
 
 </script>
@@ -40,7 +40,7 @@ defineProps({
         </div>
 
         <img
-          @click="addToCart"
+          @click="toggleCartItem"
           class="hover:scale-125 transition-all"
           :src="isAdded ? '/checked.svg' : '/plus.svg'"
           alt="Plus"

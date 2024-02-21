@@ -1,15 +1,13 @@
 <script setup>
 
-import { inject } from 'vue'
-
 defineProps( {
   id: Number,
   title: String,
   imageUrl: String,
   price: Number,
-
-  onClickRemove: Function
 });
+
+const emit = defineEmits(['removeFromCart']);
 
 </script>
 
@@ -29,10 +27,9 @@ defineProps( {
           transition z-30"
           src="/close.svg"
           alt=""
-          @click="onClickRemove"
+          @click="emit('removeFromCart')"
         >
       </div>
-
     </div>
   </div>
 </template>
