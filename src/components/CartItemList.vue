@@ -13,7 +13,7 @@ const removeFromCart = inject('removeFromCart')
 
 
 <template>
-  <div class="flex flex-1 flex-col" v-auto-animate>
+  <div class="flex flex-1 flex-col overflow-x-auto h-[400px]" v-auto-animate>
     <CartItem
       v-for="item in cart"
       :key="item.id"

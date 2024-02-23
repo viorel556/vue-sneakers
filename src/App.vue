@@ -22,6 +22,8 @@ const total = computed(() => {
   let totalPrice = cart.value.reduce((acc, item) => acc + item.price, 0)
   return totalPrice.toFixed(2) // returns a total with just 2 digits after the comma;
 })
+const isCreatingOrder = ref(false)
+const orderId = ref(null)
 
 const fetchItems = async () => {
   // Func gets items from server and assigns them to items (local state)
@@ -103,7 +105,11 @@ const toggleFavorite = async (item) => {
   // only after the request itself (POST/DELETE) WAS COMPLETED the UI gets updated accordingly;
   if (!item.isFavorite) { // if item is not favorite do:
     try {
-      const payload = { parentId: item.id } // Creates a favorite item on the server;
+      const payload = {
+        ...item,
+        isFavorite: true,
+        parentId: item.id
+      } // Creates a favorite item on the server;
       const { data } = await axios.post(`https://df4b4c57be9170d6.mokky.dev/favorites`, payload)
       item.isFavorite = true // Changing the FRONT-END to reflect that the item was added to favorites;
       item.favoriteId = data.id // saving the favorite id on Front-end; so we can delete it later
@@ -162,6 +168,8 @@ const toggleCartItem = (item) => {
 }
 const createOrder = async () => {
   try {
+    isCreatingOrder.value = true;
+
     const { data } = await axios.post(`https://df4b4c57be9170d6.mokky.dev/orders`,
       {
         items: cart.value,
@@ -170,16 +178,17 @@ const createOrder = async () => {
     )
     cart.value = [] // nullifying cart value that will automatically nullify the total as well;
 
-    return data
-  } catch (err) {
-    see(err)
-  } finally {
-    resetAddedItems() // resetting the isAdded property of menu items;
+    orderId.value = data.id
   }
+  catch (err) { see(err) }
+  finally {
+    resetAddedItems()
+    isCreatingOrder.value = false;
+  } // resetting the isAdded property of menu items;
 }
 
 // GLOBALS:
-provide('toggleDrawer', toggleDrawer) // 2 usages: Header.vue & DrawerHead.vue
+provide('toggleDrawer', toggleDrawer) // 3 usages: Drawer, Header.vue & DrawerHead.vue
 provide('removeFromCart', removeFromCart) // 1 usage: CardItemList.vue
 
 </script>
@@ -194,21 +203,23 @@ provide('removeFromCart', removeFromCart) // 1 usage: CardItemList.vue
       :cart="cart"
       :total="total"
       @create-order="createOrder"
+      :order-id="orderId"
     />
 
+
     <div class="m-10">
-      <router-view
-        :items="items"
-        :filters="filters"
-        :cart="cart"
-        :toggle-favorite="toggleFavorite"
-        :toggle-cart-item="toggleCartItem"
-        :fetch-items-and-update-favorites="fetchItemsAndUpdateFavorites"
-        :check-and-update-added-items="checkAndUpdateAddedItems"
+      <router-view :items="items"
+                   :filters="filters"
+                   :cart="cart"
+                   :toggle-favorite="toggleFavorite"
+                   :toggle-cart-item="toggleCartItem"
+                   :fetch-items-and-update-favorites="fetchItemsAndUpdateFavorites"
+                   :check-and-update-added-items="checkAndUpdateAddedItems"
       >
       </router-view>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>

@@ -8,6 +8,7 @@ const toggleDrawer = inject('toggleDrawer')
 defineProps({
   drawerOpen: Boolean,
   total: Number
+
 })
 </script>
 
@@ -24,7 +25,6 @@ defineProps({
         </div>
       </div>
     </router-link>
-
 
 
     <!-- Middle section header -->
@@ -46,6 +46,7 @@ defineProps({
         <img src="/profile.svg" alt="Profile">
         <span> Profile </span>
       </li>
+
     </ul>
 
   </header>

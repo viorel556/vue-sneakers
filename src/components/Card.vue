@@ -1,5 +1,7 @@
 <script setup>
 
+
+
 defineProps({
   // DATA FROM SERVER:
   id: Number,
@@ -7,12 +9,14 @@ defineProps({
   title: String,
   price: Number,
   // LOCAL STATE
-  isFavorite: Boolean, // [!] ILLEGAL MOVE; As per copilot we cannot keep local state within define props
+  isFavorite: Boolean,
   isAdded: Boolean,
   // CALLBACKS:
   toggleFavorite: Function,
   toggleCartItem: Function
-})
+});
+
+
 
 </script>
 
@@ -33,7 +37,6 @@ defineProps({
       <p class="mt-1"> {{ title }} </p>
 
       <div class="flex justify-between mt-5">
-
         <div class="flex flex-col">
           <span class="text-gray-400">Price</span>
           <b> {{ price }} €</b>
@@ -45,11 +48,11 @@ defineProps({
           :src="isAdded ? '/checked.svg' : '/plus.svg'"
           alt="Plus"
         />
-
       </div>
     </div>
   </div>
 </template>
 
 <style>
+
 </style>

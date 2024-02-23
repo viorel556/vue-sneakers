@@ -2,7 +2,7 @@
 import DropdownMenu from '@/DropdownMenu.vue'
 import SearchBar from '@/SearchBar.vue'
 import CardList from '@/components/CardList.vue'
-import { watch } from 'vue'
+import debounce from 'lodash.debounce'
 
 const props = defineProps({
   items: Array,
@@ -18,10 +18,12 @@ const onChangeSelect = async (event) => {
   // Func passes the event to the sortBy local state var (in App.vue);
   props.filters.sortBy = event.target.value
 }
-const onChangeSearch = async (event) => {
+
+// FOR FUTURE REFERENCE: USING DEBOUNCE HERE:
+const onChangeSearch = debounce((event) => {
   // Func passes the event to the searchQuery local state var (in App.vue);
   props.filters.searchQuery = event.target.value
-}
+}, 500)
 
 </script>
 
